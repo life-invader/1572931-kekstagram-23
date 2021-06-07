@@ -30,16 +30,16 @@ const TEST_COMMENTS = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
 
-function generateTestArray () {
+function generateTestComment () {
+  return {
+    id: generateRandomNumber(1, 1000000),
+    avatar: `img/avatar-${generateRandomNumber(1, 6)}.svg`,
+    message: TEST_COMMENTS[generateRandomNumber(0, TEST_COMMENTS.length - 1)],
+    name: TEST_NAMES[generateRandomNumber(0, TEST_NAMES.length - 1)],
+  };
+}
 
-  function generateTestComment () {
-    return {
-      id: generateRandomNumber(1, 1000000),
-      avatar: `img/avatar-${generateRandomNumber(1, 6)}.svg`,
-      message: TEST_COMMENTS[generateRandomNumber(0, TEST_COMMENTS.length - 1)],
-      name: TEST_NAMES[generateRandomNumber(0, TEST_NAMES.length - 1)],
-    };
-  }
+function generateTestArray () {
 
   return {
     id: generateRandomNumber(1, 25),
@@ -51,4 +51,3 @@ function generateTestArray () {
 }
 
 const TEST_ARRAY = new Array(25).fill(null).map(generateTestArray);
-console.log(TEST_ARRAY);
