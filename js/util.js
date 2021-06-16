@@ -1,25 +1,5 @@
 const COMMENT_LENGTH = 140;
 const TEST_COMMENT = 'Функция для проверки максимальной длины строки. Будет использоваться для проверки длины введённого комментария, но должна быть универсальна.';
-
-function generateRandomNumber (minNumber, maxNumber) {
-  minNumber = Math.round(minNumber);
-  maxNumber = Math.round(maxNumber);
-  if (maxNumber <= minNumber || maxNumber < 0 || minNumber < 0) {
-    return 'Неверно указан диапазон значений';
-  }
-  return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
-}
-
-generateRandomNumber(2, 5);
-
-function checkCommentLength (comment, maxLength) {
-  return comment.length < maxLength;
-}
-
-checkCommentLength(TEST_COMMENT, COMMENT_LENGTH);
-
-/* 4.9. Больше деталей */
-
 const TEST_NAMES = ['Саша', 'Маша', 'Даша', 'Андрей', 'Алексей'];
 const TEST_COMMENTS = [
   'Всё отлично!',
@@ -30,24 +10,37 @@ const TEST_COMMENTS = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
 
-function generateTestComment () {
+const generateRandomNumber = (minNumber, maxNumber) => {
+  minNumber = Math.round(minNumber);
+  maxNumber = Math.round(maxNumber);
+  if (maxNumber <= minNumber || maxNumber < 0 || minNumber < 0) {
+    return 'Неверно указан диапазон значений';
+  }
+  return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+};
+
+const checkCommentLength = (comment, maxLength) => comment.length < maxLength;
+
+const createComment = () => {
   return {
     id: generateRandomNumber(1, 1000000),
     avatar: `img/avatar-${generateRandomNumber(1, 6)}.svg`,
     message: TEST_COMMENTS[generateRandomNumber(0, TEST_COMMENTS.length - 1)],
     name: TEST_NAMES[generateRandomNumber(0, TEST_NAMES.length - 1)],
   };
-}
+};
 
-function generateTestArray () {
-
+const createPhotos = () => {
   return {
     id: generateRandomNumber(1, 25),
     url: `photos/${generateRandomNumber(1, 25)}.jpg`,
     description: 'Тестовое описание',
     likes: generateRandomNumber(15, 200),
-    comments: new Array(generateRandomNumber(1, 10)).fill(null).map(generateTestComment),
+    comments: new Array(generateRandomNumber(1, 10)).fill(null).map(createComment),
   };
-}
+};
 
-export {generateTestArray};
+generateRandomNumber(2, 5);
+checkCommentLength(TEST_COMMENT, COMMENT_LENGTH);
+
+export {createPhotos};
