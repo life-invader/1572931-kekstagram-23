@@ -19,3 +19,4 @@ const renderPhotos = (photos) => {
 };
 
 export {renderPhotos};
+export {photoField};

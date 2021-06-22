@@ -44,3 +44,5 @@ generateRandomNumber(2, 5);
 checkCommentLength(TEST_COMMENT, COMMENT_LENGTH);
 
 export {createPhotos};
+export {COMMENT_LENGTH};
+export {checkCommentLength};
