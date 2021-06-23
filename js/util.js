@@ -19,7 +19,7 @@ const generateRandomNumber = (minNumber, maxNumber) => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
-const checkCommentLength = (comment, maxLength) => comment.length < maxLength;
+const checkCommentLength = (comment, maxLength) => comment.length <= maxLength;
 
 const createComment = () => {
   return {

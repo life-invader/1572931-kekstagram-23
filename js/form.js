@@ -1,11 +1,14 @@
 import {COMMENT_LENGTH} from './util.js';
 import {checkCommentLength} from './util.js';
-import '../node_modules/nouislider/dist/nouislider.js'; // <= Почему он лежит в нод модулях
+
+const MIN_LENGTH = 2;
+const HASHTAG_NUMBER = 5;
+const MAX_LENGTH = 20;
 
 // Переменные открытия окна редактирования
 const uploadFile = document.querySelector('#upload-file');
 const editPhoto = document.querySelector('.img-upload__overlay');
-const body = document.querySelector('body');
+const body = document.body;
 const cancel = document.querySelector('#upload-cancel');
 
 // Пременные изменеия масштаба
@@ -17,16 +20,9 @@ const commentField = document.querySelector('.text__description');
 // Переменные фильтров
 const effects = document.querySelector('.effects__list');
 
-// Переменные noUi слайдера
-const stepSlider = document.querySelector('.effect-level__slider');
-const stepSliderValueElement = document.querySelector('.effect-level__value');
-
-// Переменные вылидации
-const MIN_LENGTH = 2;
-const hashtagsNumber = 5;
-const MAX_LENGTH = 20;
+// Переменные валидации
 const hashtagInput = document.querySelector('.text__hashtags');
-const re = /^#[A-Za-zА-Яа-я0-9]{1,19}$/;
+const regularExp = /^#[A-Za-zА-Яа-я0-9]{1,19}$/;
 
 // Функция-обработчик на ESC keydown
 const keydownEscape = (evt) => {
@@ -38,6 +34,24 @@ const keydownEscape = (evt) => {
       body.classList.remove('modal-open');
       document.removeEventListener('keydown', keydownEscape);
       uploadFile.value = '';
+    }
+  }
+};
+
+// Функция изменения масштаба
+const changeScale = (action, scale) => {
+  if (action === 'decrease') {
+    scale -= 25;
+    imgPreview.style = `transform: scale(0.${scale})`;
+    scaleValue.value = `${scale}%`;
+  } else if (action === 'increase') {
+    scale += 25;
+    if (scale >= 100) {
+      imgPreview.style = `transform: scale(${scale / 100})`;
+      scaleValue.value = `${scale}%`;
+    } else {
+      imgPreview.style = `transform: scale(0.${scale})`;
+      scaleValue.value = `${scale}%`;
     }
   }
 };
@@ -60,23 +74,14 @@ cancel.addEventListener('click', () => {
 // Редактирование и фильтры
 // Масштаб -------------------------------------------------------------------------------
 imgScale.addEventListener('click', (evt) => {
-  let scale = scaleValue.value.replace(/[^a-zа-яё0-9\s]/gi, ' ');
+  const scale = Number(scaleValue.value.replace(/[^\d]/g, ''));
   if (evt.target.classList.contains('scale__control--smaller')) {
-    if (!(+scale <= 25)) {
-      scale = +scale - 25;
-      imgPreview.style = `transform: scale(0.${scale})`;
-      scaleValue.value = `${scale}%`;
+    if (scale > 25) {
+      changeScale('decrease', scale);
     }
   } else if(evt.target.classList.contains('scale__control--bigger')) {
-    if (+scale <= 75) {
-      scale = +scale + 25;
-      if (+scale === 100) {
-        imgPreview.style.transform = `scale(${scale / 100})`;
-        scaleValue.value = `${scale}%`;
-      } else {
-        imgPreview.style.transform = `scale(0.${scale})`;
-        scaleValue.value = `${scale}%`;
-      }
+    if (scale < 100) {
+      changeScale('increase', scale);
     }
   }
 });
@@ -86,35 +91,18 @@ effects.addEventListener('click', (evt) => {
   const element = evt.target.closest('.effects__item');
   if (element.querySelector('.effects__preview').classList.contains('effects__preview--none')) {
     imgPreview.className = '';
+    imgPreview.removeAttribute('style');
   }
   imgPreview.className = `${element.querySelector('.effects__preview').classList[1]}`;
-});
-
-// noUiSlider -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-noUiSlider.create(stepSlider, {
-  start: [100],
-  step: 1,
-  range: {
-    'min': [1],
-    'max': [100],
-  },
-});
-
-stepSlider.noUiSlider.on('update', function (values, handle) {
-  stepSliderValueElement.innerHTML = values[handle];
-  if (imgPreview.classList.contains('effects__preview--chrome')) {
-    imgPreview.style = `filter: grayscale(${stepSliderValueElement.textContent})`;
-  }
-  console.log(noUiSlider);
 });
 
 // Валидация ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Хэш-теги
 hashtagInput.addEventListener('input', () => {
-  const hashtags = hashtagInput.value.toLowerCase().split(' ');
+  const hashtags = hashtagInput.value.toLowerCase().trim().split(' ');
 
   for (let i = 0; i < hashtags.length; i++) {
-    if (!(re.test(hashtags[i]))) {
+    if (!(regularExp.test(hashtags[i]))) {
       hashtagInput.setCustomValidity(`
       Хэш-тег должен начинаться с "#"
       Минимальная длина ${MIN_LENGTH} символа
@@ -122,7 +110,7 @@ hashtagInput.addEventListener('input', () => {
       `);
       break;
     } else if (hashtags.length > 5) {
-      hashtagInput.setCustomValidity(`Не более ${hashtagsNumber} хэш-тегов`);
+      hashtagInput.setCustomValidity(`Не более ${HASHTAG_NUMBER} хэш-тегов`);
       break;
     } else if (hashtags.slice(i + 1).includes(hashtags[i])) {
       hashtagInput.setCustomValidity('Хэш-теги повторяются');
@@ -137,10 +125,10 @@ hashtagInput.addEventListener('input', () => {
 // Комментарии
 commentField.addEventListener('input', () => {
   const commentValue = commentField.value;
-  if ( !(checkCommentLength(commentValue, COMMENT_LENGTH)) ) {
-    commentField.setCustomValidity(`Максимальная длина комментария ${COMMENT_LENGTH} символов`);
-  } else {
+  if (checkCommentLength(commentValue, COMMENT_LENGTH)) {
     commentField.setCustomValidity('');
+  } else {
+    commentField.setCustomValidity(`Максимальная длина комментария ${COMMENT_LENGTH} символов`);
   }
   commentField.reportValidity();
 });
