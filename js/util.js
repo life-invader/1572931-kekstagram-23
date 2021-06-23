@@ -19,7 +19,7 @@ const generateRandomNumber = (minNumber, maxNumber) => {
   return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
 };
 
-const checkCommentLength = (comment, maxLength) => comment.length < maxLength;
+const checkCommentLength = (comment, maxLength) => comment.length <= maxLength;
 
 const createComment = () => {
   return {
@@ -44,3 +44,5 @@ generateRandomNumber(2, 5);
 checkCommentLength(TEST_COMMENT, COMMENT_LENGTH);
 
 export {createPhotos};
+export {COMMENT_LENGTH};
+export {checkCommentLength};
