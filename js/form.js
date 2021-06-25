@@ -1,5 +1,6 @@
 import {COMMENT_LENGTH} from './util.js';
 import {checkCommentLength} from './util.js';
+import '../nouislider/nouislider.js';
 
 const MIN_LENGTH = 2;
 const HASHTAG_NUMBER = 5;
@@ -8,21 +9,124 @@ const MAX_LENGTH = 20;
 // Переменные открытия окна редактирования
 const uploadFile = document.querySelector('#upload-file');
 const editPhoto = document.querySelector('.img-upload__overlay');
-const body = document.body;
 const cancel = document.querySelector('#upload-cancel');
 
 // Пременные изменеия масштаба
-const imgScale = document.querySelector('.img-upload__scale');
 const scaleValue = document.querySelector('.scale__control--value');
 const imgPreview = document.querySelector('.img-upload__preview img');
 const commentField = document.querySelector('.text__description');
+const upScaleBtn = document.querySelector('.scale__control--bigger');
+const downScaleBtn = document.querySelector('.scale__control--smaller');
+
+const scaleDirection = {
+  up: 1,
+  down: -1,
+};
+const scaleThreshHold = {
+  min: 25,
+  max: 100,
+  step: 25,
+};
+
+// Функция установки значения масштаба #2
+const setScale = (scale) => {
+  if (scale === 100) {
+    imgPreview.style = `transform: scale(${scale / 100})`;
+    scaleValue.value = `${scale}%`;
+  } else {
+    imgPreview.style = `transform: scale(0.${scale})`;
+    scaleValue.value = `${scale}%`;
+  }
+};
+
+// Функция установки значения масштаба #1
+const changeScale = (direction, step) => {
+  const scale = Number(scaleValue.value.replace(/[^\d]/g, ''));
+  if (scale < scaleThreshHold.max && direction === scaleDirection.up || scale > scaleThreshHold.min && direction === scaleDirection.down) {
+    setScale(scale + direction * step);
+  }
+};
 
 // Переменные фильтров
 const effects = document.querySelector('.effects__list');
 
+// Переменные слайдера
+const stepSlider = document.querySelector('.effect-level__slider');
+const stepSliderValueElement = document.querySelector('.effect-level__value');
+const regularExpFilters = 'effects__preview--';
+
 // Переменные валидации
 const hashtagInput = document.querySelector('.text__hashtags');
 const regularExp = /^#[A-Za-zА-Яа-я0-9]{1,19}$/;
+
+// noUiSlider ===========================================================================================================================================================
+// create slider
+
+// Объект фильтров
+const filters = {
+  chrome: {
+    class: 'chrome',
+    filter: 'grayscale',
+    min: 0,
+    max: 1,
+    step: 0.1,
+    modifier: '',
+  },
+  sepia: {
+    class: 'sepia',
+    filter: 'sepia',
+    min: 0,
+    max: 1,
+    step: 0.1,
+    modifier: '',
+  },
+  marvin: {
+    class: 'marvin',
+    filter: 'invert',
+    min: 0,
+    max: 100,
+    step: 1,
+    modifier: '%',
+  },
+  phobos: {
+    class: 'phobos',
+    filter: 'blur',
+    min: 0,
+    max: 3,
+    step: 0.1,
+    modifier: 'px',
+  },
+  heat: {
+    class: 'heat',
+    filter: 'brightness',
+    min: 0,
+    max: 3,
+    step: 0.1,
+    modifier: '',
+  },
+};
+
+stepSlider.classList.add('visually-hidden');
+
+noUiSlider.create(stepSlider, {
+  start: [1],
+  step: 0.1,
+  range: {
+    'min': [0],
+    'max': [1],
+  },
+  connect: 'lower',
+});
+
+// Value
+stepSlider.noUiSlider.on('update', (values, handle) => {
+  const sliderValue = Number(values[handle]);
+  stepSliderValueElement.textContent = sliderValue;
+
+  const className = imgPreview.className.replace(regularExpFilters, '');
+  if (className && className !== '')
+  {imgPreview.style = `filter: ${filters[className].filter}( ${sliderValue + filters[className].modifier} )`;}
+});
 
 // Функция-обработчик на ESC keydown
 const keydownEscape = (evt) => {
@@ -31,27 +135,9 @@ const keydownEscape = (evt) => {
       evt.stopPropagation();
     } else {
       editPhoto.classList.add('hidden');
-      body.classList.remove('modal-open');
+      document.body.classList.remove('modal-open');
       document.removeEventListener('keydown', keydownEscape);
       uploadFile.value = '';
-    }
-  }
-};
-
-// Функция изменения масштаба
-const changeScale = (action, scale) => {
-  if (action === 'decrease') {
-    scale -= 25;
-    imgPreview.style = `transform: scale(0.${scale})`;
-    scaleValue.value = `${scale}%`;
-  } else if (action === 'increase') {
-    scale += 25;
-    if (scale >= 100) {
-      imgPreview.style = `transform: scale(${scale / 100})`;
-      scaleValue.value = `${scale}%`;
-    } else {
-      imgPreview.style = `transform: scale(0.${scale})`;
-      scaleValue.value = `${scale}%`;
     }
   }
 };
@@ -59,7 +145,7 @@ const changeScale = (action, scale) => {
 // Открытие формы ------------------------------------------------------------------------
 uploadFile.addEventListener('change', () => {
   editPhoto.classList.remove('hidden');
-  body.classList.add('modal-open');
+  document.body.classList.add('modal-open');
 
   document.addEventListener('keydown', keydownEscape);
 
@@ -67,24 +153,12 @@ uploadFile.addEventListener('change', () => {
 
 cancel.addEventListener('click', () => {
   editPhoto.classList.add('hidden');
-  body.classList.remove('modal-open');
+  document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', keydownEscape);
 });
 
-// Редактирование и фильтры
-// Масштаб -------------------------------------------------------------------------------
-imgScale.addEventListener('click', (evt) => {
-  const scale = Number(scaleValue.value.replace(/[^\d]/g, ''));
-  if (evt.target.classList.contains('scale__control--smaller')) {
-    if (scale > 25) {
-      changeScale('decrease', scale);
-    }
-  } else if(evt.target.classList.contains('scale__control--bigger')) {
-    if (scale < 100) {
-      changeScale('increase', scale);
-    }
-  }
-});
+upScaleBtn.addEventListener('click', () => changeScale(scaleDirection.up, scaleThreshHold.step));
+downScaleBtn.addEventListener('click', () => changeScale(scaleDirection.down, scaleThreshHold.step));
 
 // Фильтры ---------------------------------------------------------------------------------
 effects.addEventListener('click', (evt) => {
@@ -92,8 +166,21 @@ effects.addEventListener('click', (evt) => {
   if (element.querySelector('.effects__preview').classList.contains('effects__preview--none')) {
     imgPreview.className = '';
     imgPreview.removeAttribute('style');
+    stepSlider.classList.add('visually-hidden');
+  } else {
+    stepSlider.classList.remove('visually-hidden');
+    imgPreview.className = `${element.querySelector('.effects__preview').classList[1]}`;
+
+    const className = imgPreview.className.replace(regularExpFilters, '');
+    stepSlider.noUiSlider.updateOptions({
+      range: {
+        'min': filters[className].min,
+        'max': filters[className].max,
+      },
+      step: filters[className].step,
+      start: filters[className].max,
+    });
   }
-  imgPreview.className = `${element.querySelector('.effects__preview').classList[1]}`;
 });
 
 // Валидация ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
