@@ -30,7 +30,7 @@ const scaleThreshHold = {
 
 // Функция установки значения масштаба #2
 const setScale = (scale) => {
-  if (scale === 100) {
+  if (scale === scaleThreshHold.max) {
     imgPreview.style = `transform: scale(${scale / 100})`;
     scaleValue.value = `${scale}%`;
   } else {
@@ -54,6 +54,11 @@ const effects = document.querySelector('.effects__list');
 const stepSlider = document.querySelector('.effect-level__slider');
 const stepSliderValueElement = document.querySelector('.effect-level__value');
 const regularExpFilters = 'effects__preview--';
+
+// const getFilterClassName = () => {
+//   const className = imgPreview.className.replace(regularExpFilters, '');
+//   return className;
+// };
 
 // Переменные валидации
 const hashtagInput = document.querySelector('.text__hashtags');
@@ -106,8 +111,6 @@ const filters = {
   },
 };
 
-stepSlider.classList.add('visually-hidden');
-
 noUiSlider.create(stepSlider, {
   start: [1],
   step: 0.1,
@@ -122,10 +125,10 @@ noUiSlider.create(stepSlider, {
 stepSlider.noUiSlider.on('update', (values, handle) => {
   const sliderValue = Number(values[handle]);
   stepSliderValueElement.textContent = sliderValue;
-
   const className = imgPreview.className.replace(regularExpFilters, '');
+
   if (className && className !== '')
-  {imgPreview.style = `filter: ${filters[className].filter}( ${sliderValue + filters[className].modifier} )`;}
+  {imgPreview.style = `filter: ${filters[className].filter}(${sliderValue + filters[className].modifier})`;}
 });
 
 // Функция-обработчик на ESC keydown
@@ -170,8 +173,8 @@ effects.addEventListener('click', (evt) => {
   } else {
     stepSlider.classList.remove('visually-hidden');
     imgPreview.className = `${element.querySelector('.effects__preview').classList[1]}`;
-
     const className = imgPreview.className.replace(regularExpFilters, '');
+
     stepSlider.noUiSlider.updateOptions({
       range: {
         'min': filters[className].min,
@@ -219,3 +222,5 @@ commentField.addEventListener('input', () => {
   }
   commentField.reportValidity();
 });
+
+stepSlider.classList.add('visually-hidden');

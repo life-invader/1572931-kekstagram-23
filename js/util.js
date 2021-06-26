@@ -22,21 +22,23 @@ const generateRandomNumber = (minNumber, maxNumber) => {
 const checkCommentLength = (comment, maxLength) => comment.length <= maxLength;
 
 const createComment = () => {
+  const name = TEST_NAMES[generateRandomNumber(0, TEST_NAMES.length - 1)];
   return {
     id: generateRandomNumber(1, 1000000),
     avatar: `img/avatar-${generateRandomNumber(1, 6)}.svg`,
     message: TEST_COMMENTS[generateRandomNumber(0, TEST_COMMENTS.length - 1)],
-    name: TEST_NAMES[generateRandomNumber(0, TEST_NAMES.length - 1)],
+    name,
   };
 };
 
 const createPhotos = () => {
+  const comments = new Array(generateRandomNumber(1, 10)).fill(null).map(createComment);
   return {
     id: generateRandomNumber(1, 25),
     url: `photos/${generateRandomNumber(1, 25)}.jpg`,
     description: 'Тестовое описание',
     likes: generateRandomNumber(15, 200),
-    comments: new Array(generateRandomNumber(1, 10)).fill(null).map(createComment),
+    comments,
   };
 };
 
