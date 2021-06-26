@@ -30,7 +30,8 @@ const renderPhotos = (photos) => {
     photoElement.querySelector('.picture__likes').textContent = likes;
     photoElement.querySelector('.picture__comments').textContent = comments.length;
 
-    photoElement.addEventListener('click', () => {
+    photoElement.addEventListener('click', (evt) => {
+      evt.preventDefault();
       createComment(comments, likes, url, description);
     });
 
