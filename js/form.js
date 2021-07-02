@@ -1,10 +1,14 @@
 import {COMMENT_LENGTH} from './util.js';
 import {checkCommentLength} from './util.js';
 import '../nouislider/nouislider.js';
+import { sendNudes } from './connection.js';
 
 const MIN_LENGTH = 2;
 const HASHTAG_NUMBER = 5;
 const MAX_LENGTH = 20;
+
+// Переменные всей формы целиком
+const uploadForm = document.querySelector('#upload-select-image');
 
 // Переменные открытия окна редактирования
 const uploadFile = document.querySelector('#upload-file');
@@ -31,10 +35,10 @@ const scaleThreshHold = {
 // Функция установки значения масштаба #2
 const setScale = (scale) => {
   if (scale === scaleThreshHold.max) {
-    imgPreview.style = `transform: scale(${scale / 100})`;
+    imgPreview.style.transform = `scale(${scale / 100})`;
     scaleValue.value = `${scale}%`;
   } else {
-    imgPreview.style = `transform: scale(0.${scale})`;
+    imgPreview.style.transform = `scale(0.${scale})`;
     scaleValue.value = `${scale}%`;
   }
 };
@@ -128,8 +132,17 @@ stepSlider.noUiSlider.on('update', (values, handle) => {
   const className = imgPreview.className.replace(regularExpFilters, '');
 
   if (className && className !== '')
-  {imgPreview.style = `filter: ${filters[className].filter}(${sliderValue + filters[className].modifier})`;}
+  {imgPreview.style.filter = `${filters[className].filter}(${sliderValue + filters[className].modifier})`;}
 });
+
+// Функция очистки формы
+const cleanForm = () => {
+  uploadForm.reset();
+  imgPreview.style = '';
+  imgPreview.className = '';
+  stepSlider.classList.add('visually-hidden');
+  uploadFile.value = '';
+};
 
 // Функция-обработчик на ESC keydown
 const keydownEscape = (evt) => {
@@ -140,9 +153,23 @@ const keydownEscape = (evt) => {
       editPhoto.classList.add('hidden');
       document.body.classList.remove('modal-open');
       document.removeEventListener('keydown', keydownEscape);
-      uploadFile.value = '';
+      cleanForm();
     }
   }
+};
+
+// Функция отправки формы
+const sendForm = (evt) => {
+  evt.preventDefault();
+
+  const data = new FormData(evt.target);
+  sendNudes(data);
+
+  editPhoto.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  document.removeEventListener('keydown', keydownEscape);
+  uploadForm.removeEventListener('submit', sendForm);
+  cleanForm();
 };
 
 // Открытие формы ------------------------------------------------------------------------
@@ -151,13 +178,16 @@ uploadFile.addEventListener('change', () => {
   document.body.classList.add('modal-open');
 
   document.addEventListener('keydown', keydownEscape);
-
+  uploadForm.addEventListener('submit', sendForm);
 });
 
+// Закрытие формы ------------------------------------------------------------------------
 cancel.addEventListener('click', () => {
   editPhoto.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', keydownEscape);
+  uploadForm.removeEventListener('submit', sendForm);
+  cleanForm();
 });
 
 upScaleBtn.addEventListener('click', () => changeScale(scaleDirection.up, scaleThreshHold.step));
