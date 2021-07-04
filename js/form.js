@@ -1,7 +1,8 @@
 import {COMMENT_LENGTH} from './util.js';
 import {checkCommentLength} from './util.js';
 import '../nouislider/nouislider.js';
-import { sendNudes } from './connection.js';
+import {sendFormFetch} from './connection.js';
+import {showSuccessMessage, showErrorMessage} from './connection.js';
 
 const MIN_LENGTH = 2;
 const HASHTAG_NUMBER = 5;
@@ -163,7 +164,7 @@ const sendForm = (evt) => {
   evt.preventDefault();
 
   const data = new FormData(evt.target);
-  sendNudes(data);
+  sendFormFetch(showSuccessMessage, showErrorMessage, data);
 
   editPhoto.classList.add('hidden');
   document.body.classList.remove('modal-open');

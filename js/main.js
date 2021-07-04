@@ -1,5 +1,5 @@
 import {renderPhotos} from './thumbnails-rendering.js';
 import './form.js';
-import {getPhotosFetch} from './connection.js';
+import {getPhotosFetch, showSmallError} from './connection.js';
 
-getPhotosFetch(renderPhotos);
+getPhotosFetch(renderPhotos, showSmallError);

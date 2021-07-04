@@ -1,47 +1,56 @@
 const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
-const closeLittlePopupBtn = document.querySelector('.fail-close');
-const littlePopup = document.querySelector('.fail');
+const closeSmallPopupBtn = document.querySelector('.fail-close');
+const smallPopup = document.querySelector('.fail');
 
-const closeLittlePopup = () => {
-  littlePopup.classList.add('visually-hidden');
-  closeLittlePopupBtn.removeEventListener('click', closeLittlePopup);
+const closeSmallPopup = () => {
+  smallPopup.classList.add('visually-hidden');
+  closeSmallPopupBtn.removeEventListener('click', closeSmallPopup);
 };
 
-const onError = () => {
-  littlePopup.classList.remove('visually-hidden');
-  closeLittlePopupBtn.addEventListener('click', closeLittlePopup);
+const showSmallError = () => {
+  smallPopup.classList.remove('visually-hidden');
+  closeSmallPopupBtn.addEventListener('click', closeSmallPopup);
 };
 
-// ХЗ как удалить обработчкики кнопи эскейп с документа из этих двуъ функций
-const successEvent = (clone) => {
-  clone.addEventListener('click', (evt) => {
+// const closePopupsEsc = (evt) => {
+//   if (evt.key === 'Escape') {
+//     successMessage.remove();
+//     document.removeEventListener('keydown', closePopupEsc);
+//   }
+// };
+
+// ХЗ как удалить обработчкики кнопи эскейп с документа из этих двух функций
+const showSuccessMessage = () => {
+  const successMessage = document.body.appendChild(successMessageTemplate.cloneNode(true));
+  successMessage.addEventListener('click', (evt) => {
     if (evt.target.classList.contains('success__button') || evt.target.classList.contains('success')) {
-      clone.remove();
+      successMessage.remove();
     }
   });
 
   document.addEventListener('keydown', (evt) => {
     if (evt.key === 'Escape') {
-      clone.remove();
+      successMessage.remove();
     }
   });
 };
 
-const errorEvent = (clone) => {
-  clone.addEventListener('click', (evt) => {
+const showErrorMessage = () => {
+  const errorMessage = document.body.appendChild(errorMessageTemplate.cloneNode(true));
+  errorMessage.addEventListener('click', (evt) => {
     if (evt.target.classList.contains('error__button') || evt.target.classList.contains('error')) {
-      clone.remove();
+      errorMessage.remove();
     }
   });
   document.addEventListener('keydown', (evt) => {
     if (evt.key === 'Escape') {
-      clone.remove();
+      errorMessage.remove();
     }
   });
 };
 
-const getPhotosFetch = (renderPhotos) => {
+const getPhotosFetch = (renderPhotos, error) => {
   fetch('https://23.javascript.pages.academy/kekstagram/data')
     .then((response) => {
       if (response.ok)  {
@@ -50,28 +59,26 @@ const getPhotosFetch = (renderPhotos) => {
       throw new Error ('Нет соединения');
     })
     .then(renderPhotos)
-    .catch(onError);
+    .catch(error);
 };
 
-const sendNudes = (form) => {
+const sendFormFetch = (success, error, form) => {
   fetch('https://23.javascript.pages.academy/kekstagram', {
     method: 'POST',
     body: form,
   })
     .then((response) => {
       if (response.ok) {
-        const successMessage = document.body.appendChild(successMessageTemplate.cloneNode(true));
-
-        successEvent(successMessage);
+        success();
       } else {
         throw new Error ('Нет соединения');
       }
     })
     .catch(() => {
-      const errorMessage = document.body.appendChild(errorMessageTemplate.cloneNode(true));
-      errorEvent(errorMessage);
+      error();
     });
 };
 
-export {getPhotosFetch};
-export {sendNudes};
+export {getPhotosFetch, sendFormFetch};
+export {showSuccessMessage, showErrorMessage};
+export {showSmallError};
