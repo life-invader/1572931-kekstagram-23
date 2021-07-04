@@ -1,5 +1,7 @@
 const COMMENT_STEP = 5;
+let currentComments = [];
 
+const loadCommentsBtn = document.querySelector('.comments-loader');
 const bigPictureCommentTemplate = document.querySelector('.social__comment');
 const bigPictureComments = document.querySelector('.social__comments');
 const likesCount = document.querySelector('.likes-count');
@@ -26,30 +28,33 @@ const renderComments = (commentsList) => {
   bigPictureComments.appendChild(commentFragment);
 };
 
+const showComments = () => {
+  renderComments(currentComments.slice(bigPictureComments.children.length, bigPictureComments.children.length + COMMENT_STEP));
+  commentCount.innerHTML = `${bigPictureComments.children.length} из <span class="comments-count">${currentComments.length}</span> комментариев`;
+  if (currentComments.length <= bigPictureComments.children.length) {
+    loadCommentsBtn.classList.add('hidden');
+  }
+};
+
 const createComment = (comments, likes, url, description) => {
-  const loadCommentsBtn = document.querySelector('.comments-loader');
+  currentComments = comments;
 
   removeComments();
 
   likesCount.textContent = likes;
-  commentsCount.innerHTML = `${COMMENT_STEP} из <span class="comments-count">${comments.length}</span> комментариев`;
+  commentsCount.innerHTML = `${COMMENT_STEP} из <span class="comments-count">${currentComments.length}</span> комментариев`;
   bigPictureimg.src = url;
   socialCaption.textContent = description;
 
-  if (comments.length > COMMENT_STEP) {
+  if (currentComments.length > COMMENT_STEP) {
     loadCommentsBtn.classList.remove('hidden');
     commentCount.classList.remove('hidden');
   }
 
-  renderComments(comments.slice(0, COMMENT_STEP));
+  renderComments(currentComments.slice(0, COMMENT_STEP));
 
-  loadCommentsBtn.addEventListener('click', () => {
-    renderComments(comments.slice(bigPictureComments.children.length, bigPictureComments.children.length + COMMENT_STEP));
-    commentCount.innerHTML = `${bigPictureComments.children.length} из <span class="comments-count">${comments.length}</span> комментариев`;
-    if (comments.length === bigPictureComments.children.length) {
-      loadCommentsBtn.classList.add('hidden');
-    }
-  });
+  loadCommentsBtn.addEventListener('click', showComments);
 };
 
 export {createComment};
+export {showComments};

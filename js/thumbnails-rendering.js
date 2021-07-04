@@ -1,19 +1,19 @@
 import {createComment} from './fullscreen.js';
+import {showComments} from './fullscreen.js';
 
 const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const photoField = document.querySelector('.pictures');
 const bigPicture = document.querySelector('.big-picture');
 const commentCount = document.querySelector('.social__comment-count');
 const pictureCancelBtn = document.querySelector('#picture-cancel');
+const loadCommentsBtn = document.querySelector('.comments-loader');
 
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   commentCount.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
-  const loadCommentsBtn = document.querySelector('.comments-loader');
-  loadCommentsBtn.replaceWith(loadCommentsBtn.cloneNode(true));
-
+  loadCommentsBtn.removeEventListener('click', showComments);
   pictureCancelBtn.removeEventListener('click', closeBigPicture);
 };
 
@@ -23,9 +23,7 @@ const closeBigEsc = (evt) => {
     document.body.classList.remove('modal-open');
     commentCount.classList.add('hidden');
 
-    const loadCommentsBtn = document.querySelector('.comments-loader');
-    loadCommentsBtn.replaceWith(loadCommentsBtn.cloneNode(true));
-
+    loadCommentsBtn.removeEventListener('click', showComments);
     document.removeEventListener('keydown', closeBigEsc);
   }
 };
