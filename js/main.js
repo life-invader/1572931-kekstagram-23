@@ -1,6 +1,5 @@
 import {renderPhotos} from './thumbnails-rendering.js';
-import {createPhotos} from './util.js';
 import './form.js';
+import {getPhotosFetch, showSmallError} from './connection.js';
 
-const PHOTOS = new Array(26).fill(null).map(createPhotos);
-renderPhotos(PHOTOS);
+getPhotosFetch(renderPhotos, showSmallError);

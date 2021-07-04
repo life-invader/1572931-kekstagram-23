@@ -1416,3 +1416,39 @@ main {
 .hidden {
   display: none;
 }
+
+.fail {
+  width: 250px;
+  height: 50px;
+  position: sticky;
+  bottom: 30px;
+  left: 50px;
+  background-color: #3c3614;
+  font-family: "Open Sans", "Arial", sans-serif;
+  color: #ffe753;
+  border: 2px solid #ffe753;
+  border-radius: 10px;
+}
+
+.fail__title {
+  margin: 0;
+  padding: 0;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.fail-close {
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  width: 20px;
+  height: 20px;
+
+  background-image: url("../img/icon-cross.svg");
+
+  position: absolute;
+  left: 10px;
+
+  cursor: pointer;
+}
