@@ -112,9 +112,8 @@ const showRandom = (array) => {
 
     const randomArray = [];
     for (let i = 0; i < 10; i++) {
-      randomArray.push(array[generateRandomNumber(0, array.length)]);
+      randomArray.push(array[generateRandomNumber(0, array.length - 1)]);
     }
-
     debounceDelete();
     debounceRender(randomArray);
   });

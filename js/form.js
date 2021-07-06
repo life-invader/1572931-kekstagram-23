@@ -109,8 +109,7 @@ const createSlider = () => {
 
 const updateSliderProperies = () => {
   stepSlider.noUiSlider.on('update', (values, handle) => {
-    const sliderValue = Number(values[handle]);
-    // TODO sliderValue.toString()
+    const sliderValue = values[handle];
     stepSliderValueElement.textContent = sliderValue;
     const className = imgPreview.className.replace(REGULAR_EXP_FILTERS, '');
 

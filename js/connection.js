@@ -20,10 +20,9 @@ const sendFormFetch = (onSuccess, onError, form) => {
   })
     .then((response) => {
       if (response.ok) {
-        onSuccess();
-      } else {
-        throw new Error ('Нет соединения');
+        return onSuccess();
       }
+      throw new Error ('Нет соединения');
     })
     .catch(onError);
 };
