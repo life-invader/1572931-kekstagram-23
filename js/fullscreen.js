@@ -56,5 +56,4 @@ const createComment = (comments, likes, url, description) => {
   loadCommentsBtn.addEventListener('click', showComments);
 };
 
-export {createComment};
-export {showComments};
+export {createComment, showComments};
