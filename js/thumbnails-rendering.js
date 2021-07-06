@@ -1,6 +1,8 @@
 import {createComment, showComments} from './fullscreen.js';
 import {generateRandomNumber} from './util.js';
-import { debounce } from './utils/debounce.js';
+import {debounce} from './debounce.js';
+
+const DEBOUNCE_TIME = 500;
 
 const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const photoField = document.querySelector('.pictures');
@@ -12,6 +14,7 @@ const discussedImgBtn = document.querySelector('#filter-discussed');
 const randomImgBtn = document.querySelector('#filter-random');
 const defaultImgBtn = document.querySelector('#filter-default');
 const sortForm = document.querySelector('.img-filters__form');
+const imgFilters = document.querySelector('.img-filters');
 
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
@@ -52,6 +55,8 @@ const renderPhotos = (photos) => {
 
   photoField.appendChild(photoFragment);
 
+  imgFilters.classList.remove('img-filters--inactive');
+
   photoField.addEventListener('click', (evt) => {
     if (evt.target.classList.contains('picture__img')) {
       bigPicture.classList.remove('hidden');
@@ -70,8 +75,8 @@ const deletePhotos = () => {
   }
 };
 
-const debounceRender = debounce(renderPhotos, 500);
-const debounceDelete = debounce(deletePhotos, 500);
+const debounceRender = debounce(renderPhotos, DEBOUNCE_TIME);
+const debounceDelete = debounce(deletePhotos, DEBOUNCE_TIME);
 
 const showDiscussed = (array) => {
   discussedImgBtn.addEventListener('click', (evt) => {
@@ -115,6 +120,4 @@ const showRandom = (array) => {
   });
 };
 
-export {renderPhotos};
-export {photoField};
-export {showDiscussed, showDefault, showRandom};
+export {renderPhotos, photoField, showDiscussed, showDefault, showRandom};

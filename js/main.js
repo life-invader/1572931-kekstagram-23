@@ -1,7 +1,7 @@
-import {renderPhotos} from './thumbnails-rendering.js';
 import './form.js';
-import {getPhotosFetch, showSmallError} from './connection.js';
-import {showDiscussed, showDefault, showRandom} from './thumbnails-rendering.js';
+import {getPhotosFetch} from './connection.js';
+import {showSmallError} from './send-messages.js';
+import {renderPhotos, showDiscussed, showDefault, showRandom} from './thumbnails-rendering.js';
 
 getPhotosFetch((photos) => {
   renderPhotos(photos);
