@@ -2,6 +2,7 @@ const successMessageTemplate = document.querySelector('#success').content.queryS
 const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
 const closeSmallPopupBtn = document.querySelector('.fail-close');
 const smallPopup = document.querySelector('.fail');
+const imgFilters = document.querySelector('.img-filters');
 
 const closeSmallPopup = () => {
   smallPopup.classList.add('visually-hidden');
@@ -59,6 +60,7 @@ const getPhotosFetch = (renderPhotos, error) => {
       throw new Error ('Нет соединения');
     })
     .then(renderPhotos)
+    .then(() => imgFilters.classList.remove('img-filters--inactive'))
     .catch(error);
 };
 
