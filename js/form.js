@@ -4,6 +4,7 @@ import {checkCommentLength} from './util.js';
 import {sendFormFetch} from './connection.js';
 import {showSuccessMessage, showErrorMessage} from './send-messages.js';
 
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 const MIN_LENGTH = 2;
 const HASHTAG_NUMBER = 5;
 const MAX_LENGTH = 20;
@@ -154,11 +155,22 @@ const sendForm = (evt) => {
 
 const openImgForm = () => {
   uploadFile.addEventListener('change', () => {
-    editPhoto.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    const file = uploadFile.files[0];
+    const fileName = file.name.toLowerCase();
+    const matchesTypeFile = FILE_TYPES.some((type) => fileName.endsWith(type));
 
-    document.addEventListener('keydown', keydownEscape);
-    uploadForm.addEventListener('submit', sendForm);
+    if (matchesTypeFile) {
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        imgPreview.src = reader.result;
+        editPhoto.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+
+        document.addEventListener('keydown', keydownEscape);
+        uploadForm.addEventListener('submit', sendForm);
+      });
+      reader.readAsDataURL(file);
+    }
   });
 };
 
