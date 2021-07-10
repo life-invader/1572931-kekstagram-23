@@ -28,7 +28,7 @@ const renderComments = (commentsList) => {
   bigPictureComments.appendChild(commentFragment);
 };
 
-const showComments = () => {
+const onLoadCommentsButtonClick = () => {
   renderComments(currentComments.slice(bigPictureComments.children.length, bigPictureComments.children.length + COMMENT_STEP));
   commentCount.innerHTML = `${bigPictureComments.children.length} из <span class="comments-count">${currentComments.length}</span> комментариев`;
   if (currentComments.length <= bigPictureComments.children.length) {
@@ -53,7 +53,7 @@ const createComment = (comments, likes, url, description) => {
 
   renderComments(currentComments.slice(0, COMMENT_STEP));
 
-  loadCommentsBtn.addEventListener('click', showComments);
+  loadCommentsBtn.addEventListener('click', onLoadCommentsButtonClick);
 };
 
-export {createComment, showComments};
+export {createComment, onLoadCommentsButtonClick};

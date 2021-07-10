@@ -3,20 +3,20 @@ const errorMessageTemplate = document.querySelector('#error').content.querySelec
 const closeSmallPopupBtn = document.querySelector('.fail-close');
 const smallPopup = document.querySelector('.fail');
 
-const closeSmallPopup = () => {
+const onSmallErrorClose = () => {
   smallPopup.classList.add('visually-hidden');
-  closeSmallPopupBtn.removeEventListener('click', closeSmallPopup);
+  closeSmallPopupBtn.removeEventListener('click', onSmallErrorClose);
 };
 
 const showSmallError = () => {
   smallPopup.classList.remove('visually-hidden');
-  closeSmallPopupBtn.addEventListener('click', closeSmallPopup);
+  closeSmallPopupBtn.addEventListener('click', onSmallErrorClose);
 };
 
-const closeMessagesEsc = (evt) => {
+const onFormSubmitMessagesEscKeydown = (evt) => {
   if (evt.key === 'Escape') {
     document.querySelectorAll('.success, .error').forEach((node) => node.remove());
-    document.removeEventListener('keydown', closeMessagesEsc);
+    document.removeEventListener('keydown', onFormSubmitMessagesEscKeydown);
   }
 };
 
@@ -25,10 +25,11 @@ const showSuccessMessage = () => {
   successMessage.addEventListener('click', (evt) => {
     if (evt.target.classList.contains('success__button') || evt.target.classList.contains('success')) {
       successMessage.remove();
+      document.removeEventListener('keydown', onFormSubmitMessagesEscKeydown);
     }
   });
 
-  document.addEventListener('keydown', closeMessagesEsc);
+  document.addEventListener('keydown', onFormSubmitMessagesEscKeydown);
 };
 
 const showErrorMessage = () => {
@@ -36,9 +37,10 @@ const showErrorMessage = () => {
   errorMessage.addEventListener('click', (evt) => {
     if (evt.target.classList.contains('error__button') || evt.target.classList.contains('error')) {
       errorMessage.remove();
+      document.removeEventListener('keydown', onFormSubmitMessagesEscKeydown);
     }
   });
-  document.addEventListener('keydown', closeMessagesEsc);
+  document.addEventListener('keydown', onFormSubmitMessagesEscKeydown);
 };
 
 export {showSuccessMessage, showErrorMessage, showSmallError};

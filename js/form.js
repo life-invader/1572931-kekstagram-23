@@ -6,7 +6,7 @@ import {showSuccessMessage, showErrorMessage} from './send-messages.js';
 
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 const MIN_LENGTH = 2;
-const HASHTAG_NUMBER = 5;
+const MAX_HASHTAGS_AMOUNT = 5;
 const MAX_LENGTH = 20;
 const REGULAR_EXP_FILTERS = 'effects__preview--';
 const HASHTAG_VALIDITY = /^#[A-Za-zА-Яа-я0-9]{1,19}$/;
@@ -78,6 +78,7 @@ const effects = document.querySelector('.effects__list');
 const stepSlider = document.querySelector('.effect-level__slider');
 const stepSliderValueElement = document.querySelector('.effect-level__value');
 const hashtagInput = document.querySelector('.text__hashtags');
+const sliderEffectLevel = document.querySelector('.img-upload__effect-level');
 
 const setScale = (scale) => {
   if (scale === scaleThreshHold.max) {
@@ -123,24 +124,24 @@ const cleanForm = () => {
   uploadForm.reset();
   imgPreview.style = '';
   imgPreview.className = '';
-  stepSlider.classList.add('visually-hidden');
+  sliderEffectLevel.classList.add('visually-hidden');
   uploadFile.value = '';
 };
 
-const keydownEscape = (evt) => {
+const onFormEscKeydown = (evt) => {
   if (evt.key === 'Escape') {
     if (evt.target.tagName === 'INPUT' || evt.target.tagName === 'TEXTAREA') {
       evt.stopPropagation();
     } else {
       editPhoto.classList.add('hidden');
       document.body.classList.remove('modal-open');
-      document.removeEventListener('keydown', keydownEscape);
+      document.removeEventListener('keydown', onFormEscKeydown);
       cleanForm();
     }
   }
 };
 
-const sendForm = (evt) => {
+const onFormSubmit = (evt) => {
   evt.preventDefault();
 
   const data = new FormData(evt.target);
@@ -148,8 +149,8 @@ const sendForm = (evt) => {
 
   editPhoto.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', keydownEscape);
-  uploadForm.removeEventListener('submit', sendForm);
+  document.removeEventListener('keydown', onFormEscKeydown);
+  uploadForm.removeEventListener('submit', onFormSubmit);
   cleanForm();
 };
 
@@ -166,8 +167,8 @@ const openImgForm = () => {
         editPhoto.classList.remove('hidden');
         document.body.classList.add('modal-open');
 
-        document.addEventListener('keydown', keydownEscape);
-        uploadForm.addEventListener('submit', sendForm);
+        document.addEventListener('keydown', onFormEscKeydown);
+        uploadForm.addEventListener('submit', onFormSubmit);
       });
       reader.readAsDataURL(file);
     }
@@ -178,8 +179,8 @@ const closeImgForm = () => {
   cancel.addEventListener('click', () => {
     editPhoto.classList.add('hidden');
     document.body.classList.remove('modal-open');
-    document.removeEventListener('keydown', keydownEscape);
-    uploadForm.removeEventListener('submit', sendForm);
+    document.removeEventListener('keydown', onFormEscKeydown);
+    uploadForm.removeEventListener('submit', onFormSubmit);
     cleanForm();
   });
 };
@@ -190,9 +191,9 @@ const setFilterEffect = () => {
     if (element.querySelector('.effects__preview').classList.contains('effects__preview--none')) {
       imgPreview.className = '';
       imgPreview.removeAttribute('style');
-      stepSlider.classList.add('visually-hidden');
+      sliderEffectLevel.classList.add('visually-hidden');
     } else {
-      stepSlider.classList.remove('visually-hidden');
+      sliderEffectLevel.classList.remove('visually-hidden');
       imgPreview.className = `${element.querySelector('.effects__preview').classList[1]}`;
       const className = imgPreview.className.replace(REGULAR_EXP_FILTERS, '');
 
@@ -220,8 +221,8 @@ const checkHashtagValidity = () => {
         Максимальная длина одного хэш-тега ${MAX_LENGTH} символов
         `);
         break;
-      } else if (hashtags.length > 5) {
-        hashtagInput.setCustomValidity(`Не более ${HASHTAG_NUMBER} хэш-тегов`);
+      } else if (hashtags.length > MAX_HASHTAGS_AMOUNT) {
+        hashtagInput.setCustomValidity(`Не более ${MAX_HASHTAGS_AMOUNT} хэш-тегов`);
         break;
       } else if (hashtags.slice(i + 1).includes(hashtags[i])) {
         hashtagInput.setCustomValidity('Хэш-теги повторяются');
@@ -230,6 +231,7 @@ const checkHashtagValidity = () => {
         hashtagInput.setCustomValidity('');
       }
     }
+
     hashtagInput.reportValidity();
   });
 };
@@ -258,4 +260,4 @@ setFilterEffect();
 checkHashtagValidity();
 checkCommentValidity();
 
-stepSlider.classList.add('visually-hidden');
+sliderEffectLevel.classList.add('visually-hidden');

@@ -1,8 +1,8 @@
-import {createComment, showComments} from './fullscreen.js';
+import {createComment, onLoadCommentsButtonClick} from './fullscreen.js';
 import {generateRandomNumber} from './util.js';
 import {debounce} from './debounce.js';
 
-const DEBOUNCE_TIME = 500;
+const RANDOM_PHOTOS_COUNT = 10;
 
 const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const photoField = document.querySelector('.pictures');
@@ -16,67 +16,70 @@ const defaultImgBtn = document.querySelector('#filter-default');
 const sortForm = document.querySelector('.img-filters__form');
 const imgFilters = document.querySelector('.img-filters');
 
-const closeBigPicture = () => {
+function onFullscreenImgClose() {
   bigPicture.classList.add('hidden');
   commentCount.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
-  loadCommentsBtn.removeEventListener('click', showComments);
-  pictureCancelBtn.removeEventListener('click', closeBigPicture);
-};
+  loadCommentsBtn.removeEventListener('click', onLoadCommentsButtonClick);
+  pictureCancelBtn.removeEventListener('click', onFullscreenImgClose);
+  document.removeEventListener('keydown', onFullscreenImgEscKeydown);
+}
 
-const closeBigEsc = (evt) => {
+function onFullscreenImgEscKeydown(evt) {
   if(evt.key === 'Escape' && evt.target.tagName !== 'INPUT') {
-    bigPicture.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-    commentCount.classList.add('hidden');
-
-    loadCommentsBtn.removeEventListener('click', showComments);
-    document.removeEventListener('keydown', closeBigEsc);
+    onFullscreenImgClose();
   }
-};
+}
 
-const renderPhotos = (photos) => {
-  const photoFragment = document.createDocumentFragment();
-
-  photos.forEach(({comments, likes, url, description}) => {
-    const photoElement = photoTemplate.cloneNode(true);
-    photoElement.querySelector('.picture__img').src = url;
-    photoElement.querySelector('.picture__likes').textContent = likes;
-    photoElement.querySelector('.picture__comments').textContent = comments.length;
-
-    photoElement.addEventListener('click', (evt) => {
-      evt.preventDefault();
-      createComment(comments, likes, url, description);
-    });
-
-    photoFragment.appendChild(photoElement);
-  });
-
-  photoField.appendChild(photoFragment);
-
-  imgFilters.classList.remove('img-filters--inactive');
-
+const showFullscreenImg = () => {
   photoField.addEventListener('click', (evt) => {
     if (evt.target.classList.contains('picture__img')) {
       bigPicture.classList.remove('hidden');
       document.body.classList.add('modal-open');
 
-      document.addEventListener('keydown', closeBigEsc);
-      pictureCancelBtn.addEventListener('click', closeBigPicture);
+      document.addEventListener('keydown', onFullscreenImgEscKeydown);
+      pictureCancelBtn.addEventListener('click', onFullscreenImgClose);
     }
   });
 };
 
+const createPhoto = ({comments, likes, url, description}) => {
+  const photoElement = photoTemplate.cloneNode(true);
+  photoElement.querySelector('.picture__img').src = url;
+  photoElement.querySelector('.picture__likes').textContent = likes;
+  photoElement.querySelector('.picture__comments').textContent = comments.length;
+
+  photoElement.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    createComment(comments, likes, url, description);
+  });
+  return photoElement;
+};
+
+const showFilterButtons = () => {
+  imgFilters.classList.remove('img-filters--inactive');
+};
+
+const renderPhotos = (photos) => {
+  const photoFragment = document.createDocumentFragment();
+
+  photos.map((photo) => {
+    const photoElement = createPhoto(photo);
+    photoFragment.appendChild(photoElement);
+  });
+  photoField.appendChild(photoFragment);
+};
+
 const deletePhotos = () => {
-  const toDelete = photoField.querySelectorAll('.picture');
-  for (const value of toDelete) {
+  const photos = photoField.querySelectorAll('.picture');
+  for (const value of photos) {
     value.remove();
   }
 };
 
-const debounceRender = debounce(renderPhotos, DEBOUNCE_TIME);
-const debounceDelete = debounce(deletePhotos, DEBOUNCE_TIME);
+const debounceRender = debounce(renderPhotos);
+const debounceDelete = debounce(deletePhotos);
 
 const showDiscussed = (array) => {
   discussedImgBtn.addEventListener('click', (evt) => {
@@ -110,13 +113,13 @@ const showRandom = (array) => {
     }
     evt.target.classList.add('img-filters__button--active');
 
-    const randomArray = [];
-    for (let i = 0; i < 10; i++) {
-      randomArray.push(array[generateRandomNumber(0, array.length - 1)]);
-    }
+    const randomArray = Array.from({length: RANDOM_PHOTOS_COUNT}, () =>  array[generateRandomNumber(0, array.length - 1)]);
+
     debounceDelete();
     debounceRender(randomArray);
   });
 };
 
-export {renderPhotos, photoField, showDiscussed, showDefault, showRandom};
+showFullscreenImg();
+
+export {renderPhotos, photoField, showDiscussed, showDefault, showRandom, showFilterButtons};
