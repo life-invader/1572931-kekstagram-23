@@ -1,4 +1,4 @@
-import {createComment, onLoadCommentsButtonClick} from './fullscreen.js';
+import {openBigPicture, onLoadCommentsButtonClick} from './fullscreen.js';
 import {generateRandomNumber} from './util.js';
 import {debounce} from './debounce.js';
 
@@ -44,15 +44,15 @@ const showFullscreenImg = () => {
   });
 };
 
-const createPhoto = ({comments, likes, url, description}) => {
+const createPhoto = (photo) => {
   const photoElement = photoTemplate.cloneNode(true);
-  photoElement.querySelector('.picture__img').src = url;
-  photoElement.querySelector('.picture__likes').textContent = likes;
-  photoElement.querySelector('.picture__comments').textContent = comments.length;
+  photoElement.querySelector('.picture__img').src = photo.url;
+  photoElement.querySelector('.picture__likes').textContent = photo.likes;
+  photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
 
   photoElement.addEventListener('click', (evt) => {
     evt.preventDefault();
-    createComment(comments, likes, url, description);
+    openBigPicture(photo);
   });
   return photoElement;
 };
@@ -64,7 +64,7 @@ const showFilterButtons = () => {
 const renderPhotos = (photos) => {
   const photoFragment = document.createDocumentFragment();
 
-  photos.map((photo) => {
+  photos.forEach((photo) => {
     const photoElement = createPhoto(photo);
     photoFragment.appendChild(photoElement);
   });
@@ -73,9 +73,9 @@ const renderPhotos = (photos) => {
 
 const deletePhotos = () => {
   const photos = photoField.querySelectorAll('.picture');
-  for (const value of photos) {
-    value.remove();
-  }
+  photos.forEach((photo) => {
+    photo.remove();
+  });
 };
 
 const debounceRender = debounce(renderPhotos);
