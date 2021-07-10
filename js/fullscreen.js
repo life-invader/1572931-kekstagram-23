@@ -6,7 +6,7 @@ const bigPictureCommentTemplate = document.querySelector('.social__comment');
 const bigPictureComments = document.querySelector('.social__comments');
 const likesCount = document.querySelector('.likes-count');
 const commentsCount = document.querySelector('.social__comment-count');
-const bigPictureimg = document.querySelector('.big-picture__img img');
+const bigPictureImg = document.querySelector('.big-picture__img img');
 const socialCaption = document.querySelector('.social__caption');
 const commentCount = document.querySelector('.social__comment-count');
 
@@ -28,7 +28,7 @@ const renderComments = (commentsList) => {
   bigPictureComments.appendChild(commentFragment);
 };
 
-const showComments = () => {
+const onLoadCommentsButtonClick = () => {
   renderComments(currentComments.slice(bigPictureComments.children.length, bigPictureComments.children.length + COMMENT_STEP));
   commentCount.innerHTML = `${bigPictureComments.children.length} из <span class="comments-count">${currentComments.length}</span> комментариев`;
   if (currentComments.length <= bigPictureComments.children.length) {
@@ -36,15 +36,15 @@ const showComments = () => {
   }
 };
 
-const createComment = (comments, likes, url, description) => {
-  currentComments = comments;
+const openBigPicture = (photo) => {
+  currentComments = photo.comments;
 
   removeComments();
 
-  likesCount.textContent = likes;
+  likesCount.textContent = photo.likes;
   commentsCount.innerHTML = `${COMMENT_STEP} из <span class="comments-count">${currentComments.length}</span> комментариев`;
-  bigPictureimg.src = url;
-  socialCaption.textContent = description;
+  bigPictureImg.src = photo.url;
+  socialCaption.textContent = photo.description;
 
   if (currentComments.length > COMMENT_STEP) {
     loadCommentsBtn.classList.remove('hidden');
@@ -53,7 +53,7 @@ const createComment = (comments, likes, url, description) => {
 
   renderComments(currentComments.slice(0, COMMENT_STEP));
 
-  loadCommentsBtn.addEventListener('click', showComments);
+  loadCommentsBtn.addEventListener('click', onLoadCommentsButtonClick);
 };
 
-export {createComment, showComments};
+export {openBigPicture, onLoadCommentsButtonClick};

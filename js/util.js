@@ -12,10 +12,10 @@ const generateNumber = (minNumber, maxNumber) => {
   return newNumber;
 };
 
-const newGenerateFunc = () => {
+const generateUniqueNumber = () => {
   let unique = [];
 
-  return function greeting (minNumber, maxNumber) {
+  return (minNumber, maxNumber) => {
     let newNumber = generateNumber(minNumber, maxNumber);
     if (unique.length >= (maxNumber - minNumber + 1)) {
       unique = [];
@@ -28,6 +28,6 @@ const newGenerateFunc = () => {
   };
 };
 
-const generateRandomNumber = newGenerateFunc();
+const generateRandomNumber = generateUniqueNumber();
 
 export {COMMENT_LENGTH, checkCommentLength, generateRandomNumber};
